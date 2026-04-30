@@ -1,32 +1,46 @@
 const { Player } = TextAliveApp;
 
-const SONG_URL = "https://piapro.jp/t/6W2N";
+// ここを好きな対象曲URLに変える
+const SONG_URL = "https://www.youtube.com/watch?v=ygY2qObZv24";
 
-// TextAlive App Token
+// たいのTextAliveトークン
 const APP_TOKEN = "IWGcvQmDMQHpO49o";
 
-const statusEl = document.querySelector("#status");
-const mainLyricEl = document.querySelector("#mainLyric");
-const subLyricEl = document.querySelector("#subLyric");
-const beatEl = document.querySelector("#beat");
-const stateEl = document.querySelector("#state");
-const hostEl = document.querySelector("#host");
-const modeEl = document.querySelector("#mode");
-const playButton = document.querySelector("#playButton");
-const seekButton = document.querySelector("#seekButton");
+const mainLyricEl = document.getElementById("mainLyric");
+const subLyricEl = document.getElementById("subLyric");
+const playButton = document.getElementById("playButton");
+const timeEl = document.getElementById("time");
+const mediaEl = document.getElementById("media");
 
 let player = null;
 let ready = false;
-let currentPhraseText = "";
+let currentPhrase = "";
 
-function setStatus(text) {
-  statusEl.textContent = text;
+function createParticles() {
+  for (let i = 0; i < 36; i++) {
+    const p = document.createElement("span");
+    p.className = "particle";
+
+    const size = 2 + Math.random() * 5;
+    p.style.width = `${size}px`;
+    p.style.height = `${size}px`;
+    p.style.left = `${Math.random() * 100}%`;
+    p.style.top = `${Math.random() * 100}%`;
+    p.style.animationDuration = `${5 + Math.random() * 5}s`;
+    p.style.animationDelay = `${Math.random() * 4}s`;
+
+    document.body.appendChild(p);
+  }
 }
 
-function setMainLyric(text) {
-  if (!text || text === currentPhraseText) return;
+function formatTime(ms) {
+  return `${(ms / 1000).toFixed(1)}s`;
+}
 
-  currentPhraseText = text;
+function updateLyric(text) {
+  if (!text || text === currentPhrase) return;
+
+  currentPhrase = text;
   mainLyricEl.textContent = text;
 
   mainLyricEl.classList.remove("pop");
@@ -34,31 +48,13 @@ function setMainLyric(text) {
   mainLyricEl.classList.add("pop");
 }
 
-function createParticles() {
-  for (let i = 0; i < 48; i++) {
-    const p = document.createElement("span");
-    p.className = "particle";
+function animatePhrase(now, phrase) {
+  if (!phrase.contains(now)) return;
 
-    const size = 2 + Math.random() * 5;
+  updateLyric(phrase.text);
 
-    p.style.left = `${Math.random() * 100}%`;
-    p.style.top = `${Math.random() * 100}%`;
-    p.style.width = `${size}px`;
-    p.style.height = `${size}px`;
-    p.style.animationDuration = `${2.4 + Math.random() * 3}s`;
-    p.style.animationDelay = `${Math.random() * 3}s`;
-
-    document.body.appendChild(p);
-  }
-}
-
-function animatePhrase(now, unit) {
-  if (!unit.contains(now)) return;
-
-  setMainLyric(unit.text);
-
-  if (unit.next) {
-    subLyricEl.textContent = unit.next.text;
+  if (phrase.next) {
+    subLyricEl.textContent = phrase.next.text;
   } else {
     subLyricEl.textContent = "";
   }
@@ -69,15 +65,12 @@ function setupPlayer() {
     app: {
       token: APP_TOKEN,
     },
-    mediaElement: document.querySelector("#media"),
+    mediaElement: mediaEl,
     mediaBannerPosition: "bottom",
   });
 
   player.addListener({
     onAppReady(app) {
-      hostEl.textContent = app.managed ? "ON" : "LOCAL";
-      setStatus("app ready");
-
       if (!app.songUrl) {
         player.createFromSongUrl(SONG_URL);
       }
@@ -85,59 +78,42 @@ function setupPlayer() {
 
     onVideoReady() {
       ready = true;
-      setStatus("video ready");
+      playButton.disabled = false;
 
       let phrase = player.video.firstPhrase;
-
       while (phrase) {
         phrase.animate = animatePhrase;
         phrase = phrase.next;
       }
-
-      playButton.disabled = false;
-      seekButton.disabled = false;
-    },
-
-    onTimerReady() {
-      setStatus("ready to play");
     },
 
     onPlay() {
-      stateEl.textContent = "PLAY";
       playButton.textContent = "Pause";
     },
 
     onPause() {
-      stateEl.textContent = "STOP";
       playButton.textContent = "Play";
     },
 
     onStop() {
-      stateEl.textContent = "STOP";
       playButton.textContent = "Play";
+      timeEl.textContent = "0.0s";
     },
 
     onTimeUpdate(position) {
-      const beat = player.findBeat(position);
+      timeEl.textContent = formatTime(position);
+
       const chorus = player.findChorus(position);
-
-      if (beat) {
-        beatEl.textContent = beat.position ?? beat.index ?? "0";
-      }
-
       if (chorus) {
         document.body.classList.add("chorus");
-        modeEl.textContent = "CHORUS MODE";
       } else {
         document.body.classList.remove("chorus");
-        modeEl.textContent = "VERSE MODE";
       }
     },
   });
 }
 
 playButton.disabled = true;
-seekButton.disabled = true;
 
 playButton.addEventListener("click", () => {
   if (!player || !ready) return;
@@ -147,11 +123,6 @@ playButton.addEventListener("click", () => {
   } else {
     player.requestPlay();
   }
-});
-
-seekButton.addEventListener("click", () => {
-  if (!player || !ready) return;
-  player.requestMediaSeek(0);
 });
 
 createParticles();
