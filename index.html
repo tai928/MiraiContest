@@ -1,73 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mirai Contest</title>
+  <title>Mirai MV</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
-
 <body>
-  <main class="app">
-    <div class="bg-glow"></div>
+  <main class="mv">
+    <div class="bg-layer bg1"></div>
+    <div class="bg-layer bg2"></div>
+    <div class="noise"></div>
     <div class="scanline"></div>
 
-    <header class="header">
-      <div>
-        <p class="label">Magical Mirai Prototype</p>
-        <h1>Mirai</h1>
-      </div>
-
-      <div id="status" class="status">connecting...</div>
-    </header>
-
-    <section class="layout">
-      <article class="lyric-card">
-        <div id="mode" class="mode">VERSE MODE</div>
-
-        <p class="small-title">current lyric phrase</p>
-
-        <h2 id="mainLyric">TextAlive</h2>
-
-        <p id="subLyric">
-          Magical Mirai Lyric App
-        </p>
-
-        <div class="info-grid">
-          <div class="info">
-            <p>Beat</p>
-            <strong id="beat">0</strong>
-          </div>
-
-          <div class="info">
-            <p>State</p>
-            <strong id="state">STOP</strong>
-          </div>
-
-          <div class="info">
-            <p>Host</p>
-            <strong id="host">LOCAL</strong>
-          </div>
-        </div>
-      </article>
-
-      <aside class="side-card">
-        <div class="concept">
-          <p class="label">concept</p>
-          <h3>Lyrics as Future UI</h3>
-          <p>
-            歌詞を「情報」として扱い、未来のSNSフィードに流れ込むように表示するリリックアプリ。
-          </p>
-        </div>
-
-        <div class="controls">
-          <button id="playButton">Play</button>
-          <button id="seekButton">0:00</button>
-        </div>
-
-        <div id="media"></div>
-      </aside>
+    <section class="lyrics">
+      <p id="subLyric" class="sub-lyric">next phrase</p>
+      <h1 id="mainLyric" class="main-lyric">Loading...</h1>
     </section>
+
+    <div class="controls">
+      <button id="playButton" class="play-button">Play</button>
+      <div id="time" class="time">0.0s</div>
+    </div>
+
+    <!-- TextAliveのプレイヤー用。見せたくないので隠す -->
+    <div id="media" class="hidden-media"></div>
   </main>
 
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
