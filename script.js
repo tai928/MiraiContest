@@ -6,6 +6,7 @@ const SONG_URL = "https://www.youtube.com/watch?v=ygY2qObZv24";
 // TextAlive App Token
 const APP_TOKEN = "IWGcvQmDMQHpO49o";
 
+const prevLyricEl = document.getElementById("prevLyric");
 const mainLyricEl = document.getElementById("mainLyric");
 const subLyricEl = document.getElementById("subLyric");
 const playButton = document.getElementById("playButton");
@@ -14,9 +15,13 @@ const mediaEl = document.getElementById("media");
 
 let player = null;
 let ready = false;
+
 let lastBeatIndex = -1;
 let beatTimer = null;
+
 let currentPhraseStart = null;
+let previousPhraseText = "";
+let currentTypedSource = "";
 
 function formatTime(ms) {
   return `${(ms / 1000).toFixed(1)}s`;
@@ -25,14 +30,55 @@ function formatTime(ms) {
 function getTypedText(text, progress) {
   const chars = Array.from(text || "");
   const clamped = Math.max(0, Math.min(1, progress));
-  const count = Math.max(0, Math.ceil(chars.length * clamped));
+
+  // 最後に少し余韻を残すため、85%くらいで全文が出るようにする
+  const adjusted = Math.min(1, clamped / 0.85);
+  const count = Math.max(0, Math.ceil(chars.length * adjusted));
+
   return chars.slice(0, count).join("");
+}
+
+function restartAnimation(el, className) {
+  el.classList.remove(className);
+  void el.offsetWidth;
+  el.classList.add(className);
+}
+
+function updateSubLyric(text) {
+  const nextText = text || "";
+  if (subLyricEl.textContent === nextText) return;
+
+  subLyricEl.textContent = nextText;
+  restartAnimation(subLyricEl, "line-fade");
+}
+
+function updatePrevLyric(text) {
+  const prevText = text || "";
+  if (prevLyricEl.textContent === prevText) return;
+
+  prevLyricEl.textContent = prevText;
+  restartAnimation(prevLyricEl, "line-fade");
+}
+
+function onNewPhrase(phrase) {
+  updatePrevLyric(previousPhraseText);
+
+  currentTypedSource = phrase.text || "";
+  mainLyricEl.textContent = "";
+  restartAnimation(mainLyricEl, "line-in");
+
+  if (phrase.next) {
+    updateSubLyric(phrase.next.text);
+  } else {
+    updateSubLyric("");
+  }
+
+  previousPhraseText = currentTypedSource;
 }
 
 function animatePhrase(now, phrase) {
   if (!phrase.contains(now)) return;
 
-  const text = phrase.text || "";
   const start = phrase.startTime ?? now;
   const end = phrase.endTime ?? (start + 1000);
   const duration = Math.max(1, end - start);
@@ -40,26 +86,19 @@ function animatePhrase(now, phrase) {
 
   if (currentPhraseStart !== start) {
     currentPhraseStart = start;
-    mainLyricEl.classList.remove("line-in");
-    void mainLyricEl.offsetWidth;
-    mainLyricEl.classList.add("line-in");
+    onNewPhrase(phrase);
   }
 
-  mainLyricEl.textContent = getTypedText(text, progress);
-
-  if (phrase.next) {
-    subLyricEl.textContent = phrase.next.text;
-  } else {
-    subLyricEl.textContent = "";
-  }
+  mainLyricEl.textContent = getTypedText(currentTypedSource, progress);
 }
 
 function triggerBeat() {
   document.body.classList.add("beat");
+
   clearTimeout(beatTimer);
   beatTimer = setTimeout(() => {
     document.body.classList.remove("beat");
-  }, 120);
+  }, 115);
 }
 
 function setupPlayer() {
@@ -83,10 +122,14 @@ function setupPlayer() {
       playButton.disabled = false;
 
       let phrase = player.video.firstPhrase;
+
       while (phrase) {
         phrase.animate = animatePhrase;
         phrase = phrase.next;
       }
+
+      mainLyricEl.textContent = "Press Play";
+      subLyricEl.textContent = "lyrics will be typed here";
     },
 
     onPlay() {
@@ -100,10 +143,18 @@ function setupPlayer() {
     onStop() {
       playButton.textContent = "Play";
       timeEl.textContent = "0.0s";
-      mainLyricEl.textContent = "";
+
+      prevLyricEl.textContent = "";
+      mainLyricEl.textContent = "Press Play";
       subLyricEl.textContent = "";
+
       currentPhraseStart = null;
+      previousPhraseText = "";
+      currentTypedSource = "";
       lastBeatIndex = -1;
+
+      document.body.classList.remove("beat");
+      document.body.classList.remove("chorus");
     },
 
     onTimeUpdate(position) {
