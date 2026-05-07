@@ -1,24 +1,8 @@
 # TextAlive App API lyric sheet example
-
-インタラクティブな歌詞カードを実装した TextAlive App API のサンプルコードです。
-発声にあわせて歌詞が表示され、歌詞をクリックするとそのタイミングに再生がシークします。
-また、このアプリが TextAlive ホストと接続されていなければ再生コントロールを表示します。
-
-ビルドツールを何も使わず `script` タグで TextAlive App API を読み込んでいます。CodePenにアクセスすると、Webブラウザ上でこのアプリケーションのソースコードを編集できます。
-
-- デモページ: https://textalivejp.github.io/textalive-app-lyric-sheet/
-- CodePen: https://codepen.io/arcatdmz/pen/abNXJgG
-
-TextAlive ホストと接続された状態をテストするには [TextAlive App Debugger](https://developer.textalive.jp/app/run/?ta_app_url=https%3A%2F%2Ftextalivejp.github.io%2Ftextalive-app-lyric-sheet%2F&ta_song_url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DygY2qObZv24) のページにアクセスしてください。
-
-![sample](screenshots/textalive-app-lyric-sheet.gif)
+文言
 
 ## 違う楽曲で試すには
-
-TextAlive App API で開発されたWebアプリケーションは、（特定の楽曲向けに作り込んでいない限り）URLのクエリパラメタで `ta_song_url={楽曲のURL}` を指定すると異なる楽曲で演出を試せます。
-
-- [ブレス・ユア・ブレス by 和田たけあき feat. 初音ミク](https://textalivejp.github.io/textalive-app-lyric-sheet/?ta_song_url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3Da-Nf3QUFkOU)
-- [グリーンライツ・セレナーデ by Omoi feat. 初音ミク](https://textalivejp.github.io/textalive-app-lyric-sheet/?ta_song_url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DXSLhsjepelI)
+文言
 
 ## 開発
 
