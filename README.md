@@ -1,4 +1,4 @@
-# TextAlive App API lyric sheet example
+# レジュメ
 文言
 
 ## 違う楽曲で試すには
