@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Mirai</title>
+
+  <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+  <main class="mv">
+    <div id="sceneVerse1" class="scene scene-verse-1 active" aria-hidden="true"></div>
+    <div id="sceneVerse2" class="scene scene-verse-2" aria-hidden="true"></div>
+    <div id="sceneChorus" class="scene scene-chorus" aria-hidden="true"></div>
+
+    <div id="chorusWorld" class="chorus-world" aria-hidden="true">
+      <div class="chorus-gradient"></div>
+
+      <div class="burst-ring ring-1"></div>
+      <div class="burst-ring ring-2"></div>
+      <div class="burst-ring ring-3"></div>
+      <div id="burstParticles" class="burst-particles"></div>
+      <div id="geometricLayer" class="geometric-layer"></div>
+      <div id="lineLayer" class="line-layer"></div>
+    </div>
+
+    <div class="dark-overlay"></div>
+    <div class="light-overlay"></div>
+    <div class="noise"></div>
+    <div class="scanline"></div>
+    <div class="vignette"></div>
+    <div id="chorusFlash" class="chorus-flash"></div>
+
+    <section class="lyrics">
+      <p id="prevLyric" class="prev-lyric"></p>
+
+      <div class="main-line">
+        <h1 id="mainLyric" class="main-lyric">Loading...</h1>
+      </div>
+
+      <p id="subLyric" class="sub-lyric"></p>
+    </section>
+
+    <div class="controls">
+      <button id="playButton" class="play-button" type="button">Play</button>
+
+      <div id="progressWrap" class="progress-wrap">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+
+      <div id="time" class="time">0.0s</div>
+    </div>
+
+    <div id="media" class="hidden-media"></div>
+  </main>
+
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://unpkg.com/textalive-app-api/dist/index.js"></script>
+  <script src="./script.js"></script>
+</body>
+</html>
